@@ -29,27 +29,58 @@
 
  window.onload = getMyLocation;
 
+
+
+const ourCoords = {
+    latitude: 47.624851,
+    longitude: -122.52099
+};
+
+function computeDistance(start, dest){
+    let startLatRads = degreesToRadians(start.latitude);
+    let startLongRads = degreesToRadians(start.longitude);
+    let destLatRads = degreesToRadians(dest.latitude);
+    let destLongRads = degreesToRadians(dest.longitude);
+
+    var Radius = 6371;
+    var distance = Math.acos(Math.sin(startLatRads) * Math.sin(destLatRads) + 
+                   Math.cos(startLatRads) * Math.cos(destLatRads) *
+                   Math.cos(startLongRads - destLongRads)) * Radius;
+
+    return distance;
+}
+
+function degreesToRadians(degrees){
+    var radians = (degrees * Math.PI)/180;
+    return radians;
+}
+
+
+ 
 function getMyLocation() {
     if (navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(displayPosition, displayError);
+        navigator.geolocation.getCurrentPosition(displayLocation, displayError);
     }else{
         alert("Oops, no geolocation support");
     }
 }
 
-function displayPosition(position){
+function displayLocation(position){
     var lat = position.coords.latitude;
     var long = position.coords.longitude;
 
     var div = document.getElementById("location");
-    div.innerHTML = `You are at Latitude: ${lat}, Longitude: ${long}`;
+    var km = computeDistance(position.coords, ourCoords);
+    div.innerHTML = `You are at Latitude: ${lat}, Longitude: ${long}, ${km} km from the...`;
+
 }
+
+
 
 function displayError(error){
     var div = document.getElementById("location");
     div.innerHTML = error.message;
 }
-
 
 
 
